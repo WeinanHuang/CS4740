@@ -5,21 +5,26 @@ import re
 import collections
 import pandas as pd
 
-
+#first set up some string to cut off the head of the e-mail
 headStr1 = 'writes :'
 headStr2 = 'wrote :'
 headStr3 = 'said :'
 headStr4 = 'Subject : Re : '
 headStr5 = 'Subject : '
+
+#this regular expression is set to capture the email address
 regex = re.compile(("([a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`"
                     "{|}~-]+)*(@|\sat\s)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(\.|"
                     "\sdot\s))+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)"))
 
+#this is to set a regular expression which will be used to capture the first occurance of letter
 r_head = re.compile("([a-zA-Z]+?)")
 
 Text = ''
 
 path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
+
+#read all the file now
 files=glob.glob(path)
 for file in files:
     f=open(file, 'r')
@@ -49,11 +54,13 @@ for file in files:
     else:
         data = line
 
-
+    #clean the symbol >
     data_clean = re.sub('[>]', '', data)
     #print file, '\n', data_clean, '\n'
     #pattern = re.match('-.+', data_clean)
     #data_clean = re.sub('[\|:)()#]', '', data_clean)
+
+    #this is to clean the signture after - - -
 
     idx = data_clean.find('- - -')
 
@@ -64,14 +71,8 @@ for file in files:
         #print file, '\n','a', '\n'
     else:
         data_c1 = data_clean
-    #print file, '\n', data_c1, '\n'
-
-    #print file, '\n', data_c1, '\n'
-
-
-
-
-
+    
+    #this is to clean the signture after - - 
     idx2 = data_c1.find('- -')
 
     if (data_c1.find('- -') != -1 and len(data_c1[idx2+1:]) <150):
@@ -95,12 +96,12 @@ for file in files:
     #print file, '\n', data_clean, '\n'
     '''
 
-    
+    #delete all the email address
     for email in re.findall(regex, data_clean):
         data_clean = re.sub(email[0],'', data_clean)
 
 
-        
+    #replace all the " ' " to space   
     data_clean = data_clean.replace(" ' ",'')
     #print file, '\n', data_clean, '\n'
     
@@ -128,6 +129,7 @@ for file in files:
 
     '''
 
+    #replace all the ...
     data_after = data_after.replace('...', '')
     #print file, '\n', data_after, '\n'
 
@@ -137,14 +139,17 @@ for file in files:
 
         data_after = data_after.replace(i,' <s> ' )
 
+
+    #get rid of small residual in the email
     if data_after.rfind(' <s> ') != -1 and len(data_after[data_after.rfind(' <s> '):]) <30:
         data_after = data_after[0:data_after.rfind(' <s> ')]
 
-
+    #set boundary in the end of each string
     data_after = data_after.rstrip(".!?")
 
     data_fin = data_after + ' <s> ' 
 
+    #get a string for all the email in the folder
     Text = Text + data_fin
 print Text
 '''
