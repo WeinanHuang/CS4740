@@ -149,6 +149,9 @@ for file in files:
 
     data_fin = data_after + ' <s> ' 
 
+    #clean boundary
+    data_fin = data_fin.replace('<s>   <s>   <s>','<s>')
+    data_fin = data_fin.replace('<s>  <s>', '<s>')
     #get a string for all the email in the folder
     Text = Text + data_fin
 print Text
