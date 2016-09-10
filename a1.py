@@ -6,43 +6,46 @@ import collections
 import pandas as pd
 
 
-headStr1 = 'writes'
-headStr2 = 'wrote'
-headStr3 = 'said'
+headStr1 = 'writes :'
+headStr2 = 'wrote :'
+headStr3 = 'said :'
 headStr4 = 'Subject : Re : '
 headStr5 = 'Subject : '
 regex = re.compile(("([a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`"
                     "{|}~-]+)*(@|\sat\s)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(\.|"
                     "\sdot\s))+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)"))
 
-Text = []
+r_head = re.compile("([a-zA-Z]+?)")
+
+Text = ''
 
 path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
 files=glob.glob(path)
 for file in files:
     f=open(file, 'r')
     line = f.read().replace('\n', '')
-
+    #print file, '\n', line, '\n'
     # leave out head (Subject, Email Address, etc)
-    if line.find(headStr1) != -1:
-        ind = line.find(headStr1)
+    if line.rfind(headStr1) != -1:
+        ind = line.rfind(headStr1)
         data = line[(ind+len(headStr1)):]
 
-    elif line.find(headStr2) != -1:
-        ind = line.find(headStr2)
+    elif line.rfind(headStr2) != -1:
+        ind = line.rfind(headStr2)
         data = line[(ind+len(headStr2)):]
 
-    elif line.find(headStr3) != -1:
-        ind = line.find(headStr3)
+    elif line.rfind(headStr3) != -1:
+        ind = line.rfind(headStr3)
         data = line[(ind + len(headStr3)):]
 
-    elif line.find(headStr4) != -1:
-        ind = line.find(headStr4)
+    elif line.rfind(headStr4) != -1:
+        ind = line.rfind(headStr4)
         data = line[(ind + len(headStr4)):]
 
-    elif line.find(headStr5) != -1:
-        ind = line.find(headStr5)
+    elif line.rfind(headStr5) != -1:
+        ind = line.rfind(headStr5)
         data = line[(ind + len(headStr5)):]
+
     else:
         data = line
 
@@ -76,7 +79,7 @@ for file in files:
     else:
         data_c2 = data_c1
 
-    print file, '\n', data_c2, '\n'
+    #print file, '\n', data_c2, '\n'
 
 
     '''
@@ -90,34 +93,64 @@ for file in files:
 
 
     #print file, '\n', data_clean, '\n'
-
-
-    for email in re.findall(regex, data_clean):
-        #data_clean = re.sub(email[0],'', data_clean)
-        idx = data_clean.rfind(email[0])
-        if len(data_clean[idx:] <150:
-            data_clean
-
-            print file, '\n', data_clean[idx:], '\n'
-
     '''
 
+    
+    for email in re.findall(regex, data_clean):
+        data_clean = re.sub(email[0],'', data_clean)
+
+
+        
+    data_clean = data_clean.replace(" ' ",'')
+    #print file, '\n', data_clean, '\n'
+    
+
     # replace uneccesary notation
-    rmList = '> " | # : - ) ( * : [ ] } {'
+    rmList = '> " | # : - ) ( *  [ ] } {+ = ^_'
     rmList = rmList.split()
     for n in rmList:
-        data = data.replace(n, '')
+        data_clean = data_clean.replace(n, '')
 
     # switch multiple blanks into single ones
     data_after = ' '.join(data_clean.split())
 
-    #print file, '\n', data_clean, '\n'
+    #let all the string tart from letter and end with letter
+    idx_head = re.search(r_head, data_after)
+    #print file, '\n', data_after[idx_head.start() :], '\n'
+
+
+    '''
+    idx_gethead = idx_head.start()
+    data_after = data_after[idx_gethead:]
     
-    Text = Text + data
+    print file, '\n', data_after, '\n'
+    data_after = data_after.strip()
+
+    '''
+
+    data_after = data_after.replace('...', '')
+    #print file, '\n', data_after, '\n'
+
+    #start to set boundary
+    boundList = ['?', '!', ' . ']
+    for i in boundList:
+
+        data_after = data_after.replace(i,' <s> ' )
+
+    if data_after.rfind(' <s> ') != -1 and len(data_after[data_after.rfind(' <s> '):]) <30:
+        data_after = data_after[0:data_after.rfind(' <s> ')]
 
 
+    data_after = data_after.rstrip(".!?")
+
+    data_fin = data_after + ' <s> ' 
+
+    Text = Text + data_fin
+print Text
+'''
 # create word types and their frequencies
 vocabulary = list(set(Text.split(' ')))
 uniGramFreq = collections.Counter(Text.split(' '))
 
 biGramFreq = pd.DataFrame( [0]*(len(vocabulary) * len(vocabulary) ), index = vocabulary, columns = vocabulary)
+'''
