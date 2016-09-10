@@ -28,7 +28,7 @@ path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification
 files=glob.glob(path)
 for file in files:
     f=open(file, 'r')
-    line = f.read().replace('\n', '')
+    line = f.read().replace('\n', '').lower()
     #print file, '\n', line, '\n'
     # leave out head (Subject, Email Address, etc)
     if line.rfind(headStr1) != -1:
