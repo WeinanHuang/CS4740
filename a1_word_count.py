@@ -176,7 +176,7 @@ print 'There are',len(wd_base), 'different words in total.', '\n'
 
 # UniGram
 wd_freq = collections.Counter(TextList)
-'''
+
 print 'UniGram of words:\n'
 print wd_freq, '\n'
 print '**************************************************************\n'
