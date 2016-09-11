@@ -22,7 +22,7 @@ def txt_clean(filepath):
     r_head = re.compile("([a-zA-Z]+?)")
 
     Text = ''
-
+    T = 0
     #read all the file now
     files=glob.glob(filepath)
     for file in files:
@@ -155,14 +155,14 @@ def txt_clean(filepath):
         Text = Text + data_fin
         Text = ' '.join(Text.split())
 
-    return Text
+    return '<s> ' + Text
 
 
 # create word types and their frequencies
 
 
 
-path = '/Users/Raymond/Downloads/data_corrected/classification task/space/train_docs/*.txt'
+path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
 
 
 Text = txt_clean(path)
@@ -170,7 +170,7 @@ TextList = Text.split(' ')
 #TextListLen = len(TextList)
 #TextList = TextList[:(TextListLen/5)]
 
-wd_base = list(set(TextList))
+wd_base = list(set(TextList))#[0:100]
 
 print 'There are',len(wd_base), 'different words in total.', '\n'
 
@@ -185,7 +185,7 @@ print 'UniGram of words:\n'
 print wd_freq, '\n'
 print '**************************************************************\n'
 
-
+t = 0
 # BiGram
 print 'BiGram of words:\n'
 mat = {}
@@ -193,8 +193,11 @@ for wd in wd_base:
     wdFreq = TextList.count(wd)
     mat[wd] = {}
     for wd1 in wd_base:
-        mat[wd][wd1] = 1.0 * Text.count(wd + ' ' + wd1) / wdFreq
 
+        mat[wd][wd1] = 1.0 * Text.count(wd + ' ' + wd1) / wdFreq
+        if mat[wd][wd1] > 0:
+            t = t + 1
+        print t , '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
 print '**************************************************************\n'
 
 '''
@@ -225,7 +228,7 @@ sentence = ''
 # generate first word
 p = 0
 rand_num = random.uniform(0, 1)
-
+print mat['<s>']
 for key, value in mat['<s>'].iteritems():
     p = p + value
     if rand_num < p:
