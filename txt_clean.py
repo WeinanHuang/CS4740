@@ -105,7 +105,7 @@ def txt_clean(filepath):
 	    
 
 	    # replace uneccesary notation
-	    rmList = '> " | # : - ) ( *  [ ] } {+ = ^_'
+	    rmList = '< > " | # : - ) ( * [ ] } { + = ^ _ ~'
 	    rmList = rmList.split()
 	    for n in rmList:
 	        data_clean = data_clean.replace(n, '')
@@ -132,7 +132,7 @@ def txt_clean(filepath):
 	    #print file, '\n', data_after, '\n'
 
 	    #start to set boundary
-	    boundList = [' ? ', ' ! ', ' . ']
+	    boundList = [' ? ', ' ! ', ' . ', ' ; ']
 	    for i in boundList:
 
 	        data_after = data_after.replace(i,' <s> ' )
