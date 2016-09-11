@@ -175,7 +175,10 @@ print 'There are',len(wd_base), 'different words in total.', '\n'
 
 
 # UniGram
-wd_freq = collections.Counter(TextList)
+#wd_freq = collections.Counter(TextList)
+wd_freq = {}
+for wd in wd_base:
+    wd_freq[wd] = 1.0 * Text.count(wd) / len(Text.split(' '))
 
 print 'UniGram of words:\n'
 print wd_freq, '\n'
@@ -192,6 +195,61 @@ for wd in wd_base:
         mat[wd][wd1] = 1. * TextList.count(wd + ' ' + wd1) / wdFreq
 
 print '**************************************************************\n'
+
+'''
+# sentence generation using uni-gram
+sentence = ''
+# generate first word
+p = 0
+rand_num = random.uniform(0, 1)
+
+for key, value in wd_freq.iteritems():
+    p = p + value
+    if rand_num < p:
+        prev_word = key
+        sentence = sentence + prev_word
+        break
+
+while prev_word != '<s>':
+    for key, value in wd_freq.iteritems():
+        p = p + value
+        if rand_num < p:
+            prev_word = key
+            sentence = sentence + prev_word
+            break
+'''
+
+# sentence generation using bi-gram
+sentence = ''
+# generate first word
+p = 0
+rand_num = random.uniform(0, 1)
+
+for key, value in mat['<s>'].iteritems():
+    p = p + value
+    if rand_num < p:
+        prev_word = key
+        sentence = sentence + prev_word
+        break
+
+# generate sequence
+t = 0
+while prev_word != '<s>':
+    # t = t + 1
+    # if t > 20:
+    #     break
+    rand_num = random.uniform(0, 1)
+    word_dict = mat[prev_word]
+    p = 0
+    for key, value in word_dict.iteritems():
+        #print key, ' ', value
+        p = p + value
+        if rand_num < p:
+            sentence = sentence + ' ' + key
+            prev_word = key
+            break
+
+print 'sentense:' + sentence
 
 
 
