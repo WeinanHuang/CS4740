@@ -193,7 +193,7 @@ for wd in wd_base:
     wdFreq = TextList.count(wd)
     mat[wd] = {}
     for wd1 in wd_base:
-        mat[wd][wd1] = 1. * TextList.count(wd + ' ' + wd1) / wdFreq
+        mat[wd][wd1] = 1.0 * Text.count(wd + ' ' + wd1) / wdFreq
 
 print '**************************************************************\n'
 
