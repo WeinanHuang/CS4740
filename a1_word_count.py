@@ -3,6 +3,7 @@ import glob
 import os
 import re
 import collections
+import random
 #import pandas as pd
 
 def txt_clean(filepath):
