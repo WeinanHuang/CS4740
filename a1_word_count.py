@@ -164,7 +164,7 @@ biGramFreq = pd.DataFrame( [0]*(len(vocabulary) * len(vocabulary) ), index = voc
 '''
 
 
-path = '/Users/Raymond/Downloads/data_corrected/classification task/autos/train_docs/*.txt'
+path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
 Text = txt_clean(path)
 TextList = Text.split(' ')
 TextListLen = len(TextList)
@@ -177,6 +177,7 @@ print 'There are',len(wd_base), 'different words in total.', '\n'
 
 # UniGram
 wd_freq = collections.Counter(TextList)
+'''
 print 'UniGram of words:\n'
 print '**************************************************************\n'
 print wd_freq
@@ -189,7 +190,9 @@ for wd in wd_base[:100]:
     mat[wd] = {}
     for wd1 in wd_base:
         mat[wd][wd1] = 1.* TextList.count(wd + ' ' + wd1) / wdFreq
-'''
+
+print mat['<s>']['from']
+
 
 
 
