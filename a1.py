@@ -3,7 +3,7 @@ import glob
 import os
 import re
 import collections
-import pandas as pd
+#import pandas as pd
 
 #first set up some string to cut off the head of the e-mail
 headStr1 = 'writes :'
