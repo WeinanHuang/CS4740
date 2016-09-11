@@ -1,0 +1,9 @@
+sentence boundary principle
+
+1) !, ?, . ;
+
+2) !, ?, . ; and treat them different
+
+3) remove '' connected with blanks / ;
+
+4) treat : as word type
