@@ -96,8 +96,10 @@ def txt_clean(filepath):
         '''
 
         #delete all the email address
+        data_clean = data_c2
         for email in re.findall(regex, data_c2):
-            data_clean = re.sub(email[0],'', data_c2)
+            #data_clean = re.sub(email[0],'', data_c2)
+            data_clean = data_c2.replace(email[0],'')
 
 
         #replace all the " ' " to space   
@@ -106,7 +108,7 @@ def txt_clean(filepath):
         
 
         # replace uneccesary notation
-        rmList = '> " | # : - ) ( *  [ ] } {+ = ^_'
+        rmList = '< > " | # : - ) ( * [ ] } { + = ^ _ ~'
         rmList = rmList.split()
         for n in rmList:
             data_clean = data_clean.replace(n, '')
@@ -133,7 +135,7 @@ def txt_clean(filepath):
         #print file, '\n', data_after, '\n'
 
         #start to set boundary
-        boundList = [' ? ', ' ! ', ' . ']
+        boundList = [' ? ', ' ! ', ' . ', ' ; ']
         for i in boundList:
 
             data_after = data_after.replace(i,' <s> ' )
@@ -156,40 +158,35 @@ def txt_clean(filepath):
 
 
 # create word types and their frequencies
-'''
-vocabulary = list(set(Text.split(' ')))
-uniGramFreq = collections.Counter(Text.split(' '))
-
-biGramFreq = pd.DataFrame( [0]*(len(vocabulary) * len(vocabulary) ), index = vocabulary, columns = vocabulary)
-'''
 
 
-path = '/Users/Raymond/Downloads/data_corrected/classification task/autos/train_docs/*.txt'
+path = '/Users/Raymond/Downloads/data_corrected/classification task/space/train_docs/*.txt'
 Text = txt_clean(path)
 TextList = Text.split(' ')
-TextListLen = len(TextList)
-TextList = TextList[:(TextListLen/2)]
-
-
+#TextListLen = len(TextList)
+#TextList = TextList[:(TextListLen/5)]
 
 wd_base = list(set(TextList))
+
 print 'There are',len(wd_base), 'different words in total.', '\n'
+
 
 # UniGram
 wd_freq = collections.Counter(TextList)
 print 'UniGram of words:\n'
+print wd_freq, '\n'
 print '**************************************************************\n'
-print wd_freq
 
-'''
+
 # BiGram
+print 'BiGram of words:\n'
 mat = {}
-for wd in wd_base[:100]:
-    wdFreq = max(TextList.count(wd),1)
+for wd in wd_base:
+    wdFreq = TextList.count(wd)
     mat[wd] = {}
     for wd1 in wd_base:
-        mat[wd][wd1] = 1.* TextList.count(wd + ' ' + wd1) / wdFreq
-'''
-
+        mat[wd][wd1] = 1. * TextList.count(wd + ' ' + wd1) / wdFreq
+print mat
+print '**************************************************************\n'
 
 
