@@ -169,18 +169,17 @@ for i in range(len(path)):
     #TextListLen = len(TextList)
     #TextList = TextList[:(TextListLen/5)]
  
-    wd_base = list(set(TextList))#[0:100]
-
+    wd_base = list(set(TextList))
     print 'There are',len(wd_base), 'different words in total.', '\n'
     
-    
+    wd_count = collections.Counter(TextList)
+
     # UniGram
-    #wd_freq = collections.Counter(TextList)
-    wd_freq = {}
+    UniGram = {}
     for wd in wd_base:
         print '*********************Unigram*******************************\n'
         #print i,'\n',wd, '\n'
-        wd_freq[wd] = 1.0 * Text.count(wd) / len(Text.split(' '))
+        UniGram[wd] = 1.0 * wd_count(wd) / len(Text.split(' '))
 
     #print 'UniGram of words:\n'
     #print wd_freq, '\n'
@@ -188,32 +187,30 @@ for i in range(len(path)):
     
     
     # BiGram
-    print 'BiGram of words:\n'
-    #create dictionary
-    mat = {}
+    BiGram = {}
     for wd in wd_base:
-        mat[wd] = {}
+        BiGram[wd] = {}
+    
     for i in range(len(TextList) - 1):
-        mat[TextList[i]][TextList[i + 1]] = 0
+        BiGram[TextList[i]][TextList[i + 1]] = 0
 
         
     for i in range(len(TextList) - 1):
         print '**********************Bigram********************************\n'
         print i,'\n',TextList[i], '\n', TextList[i + 1] , '\n'
-        #wdFreq = TextList.count(wd)
         wd = TextList[i]
         wd1 = TextList[i+1]
-        mat[wd][wd1] = mat[wd][wd1] + 1 / TextList.count(wd)
+        BiGram[wd][wd1] = BiGram[wd][wd1] + 1 / wd_count(wd)
     
     # output probability table
     TableFile = open('BiGram Probability Table.txt', 'w')
 
-    for Key1 in mat.keys:
+    for Key1 in BiGram.keys:
         
         TableFile.write('Probability Table for ' + Key1 + ' :\n')
         
-        for Key2 in mat[Key1].keys:
-            line = Key1 + '\t' + Key2 + '\t' + '>>>>>>>>>>>>>>>>>>' + mat[Key1][Key2] + '\n'
+        for Key2 in BiGram[Key1].keys:
+            line = Key1 + '\t' + Key2 + '\t' + '>>>>>>>>>>>>>>>>>>' + BiGram[Key1][Key2] + '\n'
             TableFile.write(line)
         
         print '\n'
@@ -229,7 +226,7 @@ for i in range(len(path)):
         p = 0
         rand_num = random.uniform(0, 1)
 
-        for key, value in wd_freq.iteritems():
+        for key, value in UniGram.iteritems():
             p = p + value
             if rand_num < p:
                 prev_word = key
@@ -239,7 +236,7 @@ for i in range(len(path)):
         while prev_word != '<s>':
             rand_num = random.uniform(0, 1)
             p = 0
-            for key, value in wd_freq.iteritems():
+            for key, value in UniGram.iteritems():
                 p = p + value
                 if rand_num < p:
                     prev_word = key
@@ -255,7 +252,7 @@ for i in range(len(path)):
         p = 0
         rand_num = random.uniform(0, 1)
 
-        for key, value in mat['<s>'].iteritems():
+        for key, value in BiGram['<s>'].iteritems():
             p = p + value
             if rand_num < p:
                 prev_word = key
@@ -269,7 +266,7 @@ for i in range(len(path)):
             # if t > 20:
             #     break
             rand_num = random.uniform(0, 1)
-            word_dict = mat[prev_word]
+            word_dict = BiGram[prev_word]
             p = 0
             for key, value in word_dict.iteritems():
                 #print key, ' ', value
