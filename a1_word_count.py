@@ -4,7 +4,14 @@ import re
 import collections
 import nltk
 #nltk.download()
-#import pandas as pd
+
+# global variables
+head = 'C:\Users\Ziyan Liu\Desktop\Cornell\Study\cs4740\data\data_corrected\classification task\\'
+text_type = ['atheism', 'autos']
+tail = '\\train_docs\\*.txt'
+path = [head + text_type[0] +ypetail, head + text_type[1] +ypetail]
+sentence_bilist = ''
+sentence_unilist = ''
 
 
 def txt_clean(filepath):
@@ -150,17 +157,18 @@ def txt_clean(filepath):
 # create word types and their frequencies
 
 
-
-path =['/Users/Raymond/Downloads/data_corrected/classification task/atheism/train_docs/*.txt']
 sentence_bilist= ''
 sentence_unilist = ''
-for i in path:
-    Text = txt_clean(i)
+for i in range(len(path)):
+    
+    sentence_bilist = sentence_bilist + ' ' + text_type[i] + '\n'
+    sentence_unilist = sentence_unilist + ' ' + text_type[i] + '\n'
+    
+    Text = txt_clean(path[i])
     TextList = Text.split(' ')
     #TextListLen = len(TextList)
     #TextList = TextList[:(TextListLen/5)]
  
-    
     wd_base = list(set(TextList))#[0:100]
 
     print 'There are',len(wd_base), 'different words in total.', '\n'
@@ -211,7 +219,7 @@ for i in path:
         print '\n'
     
     TableFile.close()
-    '''
+    
     #print '*************************Bigram****************************\n'
     
     for i in range(10):
@@ -273,6 +281,7 @@ for i in path:
 
         #print 'sentense:' + sentence
         sentence_bilist = sentence_bilist + sentence + '\n'
+
 text_file = open("bifile.txt", "w")
 
 text_file.write(sentence_bilist)
@@ -284,9 +293,6 @@ text_file = open("unifile.txt", "w")
 text_file.write(sentence_unilist)
 
 text_file.close()
-
-
-'''
 
 
 
