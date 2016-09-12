@@ -5,7 +5,8 @@ import collections
 import nltk
 #nltk.download()
 #import pandas as pd
-path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
+
+
 def txt_clean(filepath):
     #first set up some string to cut off the head of the e-mail
     headStr1 = 'writes :'
@@ -24,10 +25,8 @@ def txt_clean(filepath):
 
     Text = ''
 
-    path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
-
     #read all the file now
-    files=glob.glob(path)
+    files=glob.glob(filepath)
     for file in files:
         f=open(file, 'r')
         line = f.read().replace('\n', '').lower()
@@ -152,7 +151,7 @@ def txt_clean(filepath):
 
 
 
-path =['/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/atheism/train_docs/*.txt','/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/autos/train_docs/*.txt']
+path =['/Users/Raymond/Downloads/data_corrected/classification task/atheism/train_docs/*.txt']
 sentence_bilist= ''
 sentence_unilist = ''
 for i in path:
@@ -166,7 +165,7 @@ for i in path:
 
     print 'There are',len(wd_base), 'different words in total.', '\n'
     
-    '''
+    
     # UniGram
     #wd_freq = collections.Counter(TextList)
     wd_freq = {}
@@ -178,8 +177,8 @@ for i in path:
     #print 'UniGram of words:\n'
     #print wd_freq, '\n'
     #print '*************************Unigram******************************\n'
-    '''
-    t = 0
+    
+    
     # BiGram
     print 'BiGram of words:\n'
     #create dictionary
@@ -196,9 +195,22 @@ for i in path:
         #wdFreq = TextList.count(wd)
         wd = TextList[i]
         wd1 = TextList[i+1]
-   
-        mat[wd][wd1] = mat[wd][wd1] + 1
-    print mat
+        mat[wd][wd1] = mat[wd][wd1] + 1 / TextList.count(wd)
+    
+    # output probability table
+    TableFile = open('BiGram Probability Table.txt', 'w')
+
+    for Key1 in mat.keys:
+        
+        TableFile.write('Probability Table for ' + Key1 + ' :\n')
+        
+        for Key2 in mat[Key1].keys:
+            line = Key1 + '\t' + Key2 + '\t' + '>>>>>>>>>>>>>>>>>>' + mat[Key1][Key2] + '\n'
+            TableFile.write(line)
+        
+        print '\n'
+    
+    TableFile.close()
     '''
     #print '*************************Bigram****************************\n'
     
