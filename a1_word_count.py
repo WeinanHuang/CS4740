@@ -7,12 +7,12 @@ import random
 #nltk.download()
 
 # global variables
-head = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/'
-text_type = ['atheism', 'autos']
+head = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task//'
+text_type = ['atheism', 'autos', 'graphics','medicine','motorcycles','religion','space']
 
-tail = '/train_docs/*.txt'
+tail = '//train_docs/*.txt'
 
-path = [head + text_type[0] +tail, head + text_type[1] +tail]
+path = [head + text_type[i] +tail for i in range(len(text_type))]
 sentence_bilist = ''
 sentence_unilist = ''
 
@@ -99,7 +99,7 @@ def txt_clean(filepath):
 
         #delete all the email address
         for email in re.findall(regex, data_clean):
-            data_clean = re.sub(email[0],'', data_c2)
+            data_clean = data_c2.replace(email[0],'')
 
 
         #replace all the " ' " to space   
@@ -226,7 +226,7 @@ for i in range(len(path)):
     
     #print '*************************Bigram****************************\n'
     
-    for i in range(10):
+    for j in range(10):
         # sentence generation using uni-gram
         sentence = ''
         # generate first word
@@ -253,7 +253,7 @@ for i in range(len(path)):
         
 
     # sentence generation using bi-gram
-    for i in range(10):
+    for j in range(10):
         sentence = ''
         # generate first word
         p = 0
