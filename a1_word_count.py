@@ -177,7 +177,7 @@ for i in range(len(path)):
     for wd in wd_base:
         print '*********************Unigram*******************************\n'
         #print i,'\n',wd, '\n'
-        UniGram[wd] = 1.0 * wd_count(wd) / len(Text.split(' '))
+        UniGram[wd] = 1.0 * wd_count[wd] / len(Text.split(' '))
 
     #print 'UniGram of words:\n'
     #print wd_freq, '\n'
@@ -198,7 +198,7 @@ for i in range(len(path)):
         print i,'\n',TextList[i], '\n', TextList[i + 1] , '\n'
         wd = TextList[i]
         wd1 = TextList[i+1]
-        BiGram[wd][wd1] = BiGram[wd][wd1] + 1 / wd_count(wd)
+        BiGram[wd][wd1] = BiGram[wd][wd1] + 1 / wd_count[wd]
     
     # output probability table
     TableFile = open('BiGram Probability Table.txt', 'w')
