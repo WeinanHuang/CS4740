@@ -1,12 +1,13 @@
-# read modules
 import glob
 import os
 import re
 import collections
-import random
+import nltk
+#nltk.download()
 #import pandas as pd
-
+path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
 def txt_clean(filepath):
+    #first set up some string to cut off the head of the e-mail
     headStr1 = 'writes :'
     headStr2 = 'wrote :'
     headStr3 = 'said :'
@@ -22,15 +23,16 @@ def txt_clean(filepath):
     r_head = re.compile("([a-zA-Z]+?)")
 
     Text = ''
-    T = 0
+
+    path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
+
     #read all the file now
-    files=glob.glob(filepath)
+    files=glob.glob(path)
     for file in files:
         f=open(file, 'r')
-
         line = f.read().replace('\n', '').lower()
+        #print file, '\n', line, '\n'
         # leave out head (Subject, Email Address, etc)
-
         if line.rfind(headStr1) != -1:
             ind = line.rfind(headStr1)
             data = line[(ind+len(headStr1)):]
@@ -55,22 +57,22 @@ def txt_clean(filepath):
             data = line
 
         #clean the symbol >
-        
+        data_clean = re.sub('[>]', '', data)
         #print file, '\n', data_clean, '\n'
         #pattern = re.match('-.+', data_clean)
         #data_clean = re.sub('[\|:)()#]', '', data_clean)
 
         #this is to clean the signture after - - -
 
-        idx = data.find('- - -')
+        idx = data_clean.find('- - -')
 
 
 
-        if (data.find('- - -') != -1 and len(data[idx+1:]) <150):
-            data_c1 = data[0:idx+1]
+        if (data_clean.find('- - -') != -1 and len(data_clean[idx+1:]) <150):
+            data_c1 = data_clean[0:idx+1]
             #print file, '\n','a', '\n'
         else:
-            data_c1 = data
+            data_c1 = data_clean
         
         #this is to clean the signture after - - 
         idx2 = data_c1.find('- -')
@@ -83,24 +85,11 @@ def txt_clean(filepath):
         #print file, '\n', data_c2, '\n'
 
 
-        '''
-        idx = data_clean.find('= = =')
-
-        if '= = =' in data_clean & len(data_clean[idx:]) < 150:
-            print file, '\n', data_clean[idx:], '\n'
-
-
-
-
-
-        #print file, '\n', data_clean, '\n'
-        '''
+        
 
         #delete all the email address
-        data_clean = data_c2
-        for email in re.findall(regex, data_c2):
-            #data_clean = re.sub(email[0],'', data_c2)
-            data_clean = data_c2.replace(email[0],'')
+        for email in re.findall(regex, data_clean):
+            data_clean = re.sub(email[0],'', data_c2)
 
 
         #replace all the " ' " to space   
@@ -109,7 +98,7 @@ def txt_clean(filepath):
         
 
         # replace uneccesary notation
-        rmList = '< > " | # : - ) ( * [ ] } { + = ^ _ ~'
+        rmList = '> " | # : - ) ( * [ ] } { + = ^ __ ~ / \\'
         rmList = rmList.split()
         for n in rmList:
             data_clean = data_clean.replace(n, '')
@@ -132,11 +121,15 @@ def txt_clean(filepath):
         '''
 
         #replace all the ...
-        data_after = data_after.replace('...', '')
+        #data_after = data_after.replace('...', '')
         #print file, '\n', data_after, '\n'
-
+        sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
+        sen_list = ['<s> ' + s for s in sent_detector.tokenize(data_after.strip())]
+        sen_str = ' '.join(sen_list)
+        #print file, '\n', sen_str,'\n'
+        '''
         #start to set boundary
-        boundList = [' ? ', ' ! ', ' . ', ' ; ']
+        boundList = ['?', '!', ' . ']
         for i in boundList:
 
             data_after = data_after.replace(i,' <s> ' )
@@ -148,114 +141,140 @@ def txt_clean(filepath):
 
         #set boundary in the end of each string
         data_after = data_after.rstrip(".!?")
-
-        data_fin = data_after + ' <s> ' 
-
+        '''
+        
+        
         #get a string for all the email in the folder
-        Text = Text + data_fin
-        Text = ' '.join(Text.split())
-
-    return '<s> ' + Text
-
+        Text = Text + ' ' + sen_str
+    return Text + ' <s> '
 
 # create word types and their frequencies
 
 
 
-path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/motorcycles/train_docs/*.txt'
+path =['/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/atheism/train_docs/*.txt','/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/autos/train_docs/*.txt']
+sentence_bilist= ''
+sentence_unilist = ''
+for i in path:
+    Text = txt_clean(i)
+    TextList = Text.split(' ')
+    #TextListLen = len(TextList)
+    #TextList = TextList[:(TextListLen/5)]
+ 
+    
+    wd_base = list(set(TextList))#[0:100]
 
+    print 'There are',len(wd_base), 'different words in total.', '\n'
+    
+    '''
+    # UniGram
+    #wd_freq = collections.Counter(TextList)
+    wd_freq = {}
+    for wd in wd_base:
+        print '*********************Unigram*******************************\n'
+        #print i,'\n',wd, '\n'
+        wd_freq[wd] = 1.0 * Text.count(wd) / len(Text.split(' '))
 
-Text = txt_clean(path)
-TextList = Text.split(' ')
-#TextListLen = len(TextList)
-#TextList = TextList[:(TextListLen/5)]
+    #print 'UniGram of words:\n'
+    #print wd_freq, '\n'
+    #print '*************************Unigram******************************\n'
+    '''
+    t = 0
+    # BiGram
+    print 'BiGram of words:\n'
+    #create dictionary
+    mat = {}
+    for wd in wd_base:
+        mat[wd] = {}
+    for i in range(len(TextList) - 1):
+        mat[TextList[i]][TextList[i + 1]] = 0
 
-wd_base = list(set(TextList))#[0:100]
+        
+    for i in range(len(TextList) - 1):
+        print '**********************Bigram********************************\n'
+        print i,'\n',TextList[i], '\n', TextList[i + 1] , '\n'
+        #wdFreq = TextList.count(wd)
+        wd = TextList[i]
+        wd1 = TextList[i+1]
+   
+        mat[wd][wd1] = mat[wd][wd1] + 1
+    print mat
+    '''
+    #print '*************************Bigram****************************\n'
+    
+    for i in range(10):
+        # sentence generation using uni-gram
+        sentence = ''
+        # generate first word
+        p = 0
+        rand_num = random.uniform(0, 1)
 
-print 'There are',len(wd_base), 'different words in total.', '\n'
+        for key, value in wd_freq.iteritems():
+            p = p + value
+            if rand_num < p:
+                prev_word = key
+                sentence = sentence + prev_word
+                break
 
+        while prev_word != '<s>':
+            rand_num = random.uniform(0, 1)
+            p = 0
+            for key, value in wd_freq.iteritems():
+                p = p + value
+                if rand_num < p:
+                    prev_word = key
+                    sentence = sentence + ' ' + prev_word
+                    break
+        sentence_unilist = sentence_unilist + sentence + '\n'
+        
 
-# UniGram
-#wd_freq = collections.Counter(TextList)
-wd_freq = {}
-for wd in wd_base:
-    wd_freq[wd] = 1.0 * Text.count(wd) / len(Text.split(' '))
+    # sentence generation using bi-gram
+    for i in range(10):
+        sentence = ''
+        # generate first word
+        p = 0
+        rand_num = random.uniform(0, 1)
 
-print 'UniGram of words:\n'
-print wd_freq, '\n'
-print '**************************************************************\n'
+        for key, value in mat['<s>'].iteritems():
+            p = p + value
+            if rand_num < p:
+                prev_word = key
+                sentence = sentence  + prev_word
+                break
 
-t = 0
-# BiGram
-print 'BiGram of words:\n'
-mat = {}
-for wd in wd_base:
-    wdFreq = TextList.count(wd)
-    mat[wd] = {}
-    for wd1 in wd_base:
+        # generate sequence
+        t = 0
+        while prev_word != '<s>':
+            # t = t + 1
+            # if t > 20:
+            #     break
+            rand_num = random.uniform(0, 1)
+            word_dict = mat[prev_word]
+            p = 0
+            for key, value in word_dict.iteritems():
+                #print key, ' ', value
+                p = p + value
+                if rand_num < p:
+                    sentence = sentence + ' ' + key 
+                    prev_word = key
+                    break
 
-        mat[wd][wd1] = 1.0 * Text.count(wd + ' ' + wd1) / wdFreq
-        if mat[wd][wd1] > 0:
-            t = t + 1
-        print t , '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-print '**************************************************************\n'
+        #print 'sentense:' + sentence
+        sentence_bilist = sentence_bilist + sentence + '\n'
+text_file = open("bifile.txt", "w")
+
+text_file.write(sentence_bilist)
+
+text_file.close()
+
+text_file = open("unifile.txt", "w")
+
+text_file.write(sentence_unilist)
+
+text_file.close()
+
 
 '''
-# sentence generation using uni-gram
-sentence = ''
-# generate first word
-p = 0
-rand_num = random.uniform(0, 1)
-
-for key, value in wd_freq.iteritems():
-    p = p + value
-    if rand_num < p:
-        prev_word = key
-        sentence = sentence + prev_word
-        break
-
-while prev_word != '<s>':
-    for key, value in wd_freq.iteritems():
-        p = p + value
-        if rand_num < p:
-            prev_word = key
-            sentence = sentence + prev_word
-            break
-'''
-
-# sentence generation using bi-gram
-sentence = ''
-# generate first word
-p = 0
-rand_num = random.uniform(0, 1)
-print mat['<s>']
-for key, value in mat['<s>'].iteritems():
-    p = p + value
-    if rand_num < p:
-        prev_word = key
-        sentence = sentence + prev_word
-        break
-
-# generate sequence
-t = 0
-while prev_word != '<s>':
-    # t = t + 1
-    # if t > 20:
-    #     break
-    rand_num = random.uniform(0, 1)
-    word_dict = mat[prev_word]
-    p = 0
-    for key, value in word_dict.iteritems():
-        #print key, ' ', value
-        p = p + value
-        if rand_num < p:
-            sentence = sentence + ' ' + key
-            prev_word = key
-            break
-
-print 'sentense:' + sentence
-
-
 
 
 
