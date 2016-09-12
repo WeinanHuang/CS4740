@@ -9,7 +9,7 @@ import nltk
 head = 'C:\Users\Ziyan Liu\Desktop\Cornell\Study\cs4740\data\data_corrected\classification task\\'
 text_type = ['atheism', 'autos']
 tail = '\\train_docs\\*.txt'
-path = [head + text_type[0] +ypetail, head + text_type[1] +ypetail]
+path = [head + text_type[0] +tail, head + text_type[1] +tail]
 sentence_bilist = ''
 sentence_unilist = ''
 
@@ -157,8 +157,6 @@ def txt_clean(filepath):
 # create word types and their frequencies
 
 
-sentence_bilist= ''
-sentence_unilist = ''
 for i in range(len(path)):
     
     sentence_bilist = sentence_bilist + ' ' + text_type[i] + '\n'
