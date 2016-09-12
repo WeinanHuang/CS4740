@@ -9,7 +9,11 @@ import random
 # global variables
 head = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/'
 text_type = ['atheism', 'autos']
+<<<<<<< HEAD
 tail = '/train_docs/*.txt'
+=======
+tail = '\\train_docs\\*.txt'
+>>>>>>> origin/master
 path = [head + text_type[0] +tail, head + text_type[1] +tail]
 sentence_bilist = ''
 sentence_unilist = ''
@@ -159,8 +163,6 @@ def txt_clean(filepath):
 # create word types and their frequencies
 
 
-sentence_bilist= ''
-sentence_unilist = ''
 for i in range(len(path)):
     
     sentence_bilist = sentence_bilist + ' ' + text_type[i] + '\n'
