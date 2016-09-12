@@ -9,11 +9,9 @@ import random
 # global variables
 head = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/'
 text_type = ['atheism', 'autos']
-<<<<<<< HEAD
+
 tail = '/train_docs/*.txt'
-=======
-tail = '\\train_docs\\*.txt'
->>>>>>> origin/master
+
 path = [head + text_type[0] +tail, head + text_type[1] +tail]
 sentence_bilist = ''
 sentence_unilist = ''
@@ -180,10 +178,11 @@ for i in range(len(path)):
     
     # UniGram
     UniGram = {}
+    text_len = len(Text.split(' '))
     for wd in wd_base:
         print '*********************Unigram*******************************\n'
         #print i,'\n',wd, '\n'
-        UniGram[wd] = 1.0 * wd_count[wd] / len(Text.split(' '))
+        UniGram[wd] = 1.0 * wd_count[wd] / text_len
 
     #print 'UniGram of words:\n'
     #print wd_freq, '\n'
@@ -201,10 +200,14 @@ for i in range(len(path)):
         
     for i in range(len(TextList) - 1):
         print '**********************Bigram********************************\n'
-        print i,'\n',TextList[i], '\n', TextList[i + 1] , '\n'
+        print 100.0 * i / len(TextList),'\n',TextList[i], '\n', TextList[i + 1] , '\n'
         wd = TextList[i]
         wd1 = TextList[i+1]
-        BiGram[wd][wd1] = BiGram[wd][wd1] + 1 / wd_count[wd]
+        BiGram[wd][wd1] = BiGram[wd][wd1] + 1 
+
+    for Key in BiGram.keys():
+        for key, value in BiGram[Key].items():
+            BiGram[Key][key] = 1. * value / wd_count[Key]
     
     # output probability table
     TableFile = open('BiGram Probability Table.txt', 'w')
@@ -214,7 +217,7 @@ for i in range(len(path)):
         TableFile.write('Probability Table for ' + Key1 + ' :\n')
         
         for Key2 in BiGram[Key1].keys():
-            line = Key1 + '\t' + Key2 + '\t' + '>>>>>>>>>>>>>>>>>>' + str(BiGram[Key1][Key2]) + '\n'
+            line = Key1 + '\t' + Key2 + '\t' + '>>>>>>>>>>>>>>>>>>' + '\t' + str(BiGram[Key1][Key2]) + '\n'
             TableFile.write(line)
         
         print '\n'
