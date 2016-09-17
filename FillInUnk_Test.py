@@ -2,7 +2,7 @@
 Input:  test file text string, shreshold k, topic vocabulary list
 Output: test file text string with <unk>
 '''
-def FillInUnk_Test (txtStr, k, vocList):
+def FillInUnk_Test (txtStr, vocList):
     
     txtList = txtStr.split()
     
