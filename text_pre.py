@@ -143,9 +143,56 @@ for i in text_type:
 	print i
 	clean_string[i] = txt_clean_for_pre(path)
 
-print clean_string['atheism']
+'''
+Input:   cleaned text string, shreshold k for unknow words
+Output:  text list with <unk>, vocabulary list
+'''
+def FillInUnk (txtStr, k): 
+    
+    textList = txtStr.split()
+
+    voc_all = {}
+    for i in textList:
+        voc_all[i] = textList.count(i)
+
+    unkList = []
+    for wd in voc_all.keys():
+        if voc_all[wd] <= k: 
+            unkList.append(wd)
+    
+    for wd in unkList:
+        textList = ['<unk>' if x == wd else x for x in textList ]
+    
+    vocList = list(set(textList))
+    
+    return(textList, vocList)
+
+'''
+Take word list and vocabulary as input
+based on the bigram model output the bigram frequency table
+'''
+
+def gen_BiGram(TextList,wd_base):
+    BiGram = {}
+    for wd in wd_base:
+        BiGram[wd] = {}
+
+    for i in range(len(TextList) - 1):
+        BiGram[TextList[i]][TextList[i + 1]] = 0
+
+        
+    for i in range(len(TextList) - 1):
+        print '**********************Bigram********************************\n'
+        print 100.0 * i / len(TextList),'\n',TextList[i], '\n', TextList[i + 1] , '\n'
+        wd = TextList[i]
+        wd1 = TextList[i+1]
+        BiGram[wd][wd1] = BiGram[wd][wd1] + 1 
+
+    return BiGram
 
 
-
+text, vocabulary = FillInUnk(clean_string['atheism'], 1)
+fre_table = gen_BiGram(text, vocabulary)
+print fre_table
 
 

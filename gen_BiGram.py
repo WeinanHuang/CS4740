@@ -18,4 +18,8 @@ def gen_BiGram(TextList,wd_base):
         wd1 = TextList[i+1]
         BiGram[wd][wd1] = BiGram[wd][wd1] + 1 
 
+    for Key in BiGram.keys():
+        for key, value in BiGram[Key].items():
+            BiGram[Key][key] = 1. * value / wd_count[Key]
+
     return BiGram
