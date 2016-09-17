@@ -4,7 +4,7 @@ Output:  text list with <unk>, vocabulary list
 '''
 def FillInUnk (txtStr, k): 
     
-    textList = textStr.split()
+    textList = txtStr.split()
 
     voc_all = {}
     for i in textList:
