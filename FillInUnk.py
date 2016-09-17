@@ -4,20 +4,20 @@ Output:  text list with <unk>, vocabulary list
 '''
 def FillInUnk (txtStr, k): 
     
-    textList = txtStr.split()
+    txtList = txtStr.split()
 
     voc_all = {}
-    for i in textList:
-        voc_all[i] = textList.count(i)
+    for i in txtList:
+        voc_all[i] = txtList.count(i)
 
     unkList = []
-    for wd in voc_all.keys():
-        if voc_all[wd] <= k: 
-            unkList.append(wd)
+    for word in voc_all.keys():
+        if voc_all[word] <= k: 
+            unkList.append(word)
     
-    for wd in unkList:
-        textList = ['<unk>' if x == wd else x for x in textList ]
+    for word in unkList:
+        txtList = ['<unk>' if x == word else x for x in txtList ]
     
-    vocList = list(set(textList))
+    vocList = list(set(txtList))
     
-    return(textList, vocList)
+    return(txtList, vocList)
