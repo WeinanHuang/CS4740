@@ -132,9 +132,9 @@ tail = '/train_docs/*.txt'
 train_text = {}
 for i in text_type:
     path = head + i + tail
-
     train_text[i] = txt_clean_for_test(path)
-    print len(train_text[i])
+    
+
 
 
 
