@@ -7,23 +7,9 @@ import random
 import numpy as np
 import operator
 
-#nltk.download()
-#I used the nltk in the code, please download the package before running our code
-# global variables
-work_dir = os.getcwd() + '/'
-#please change the path to the data file
-head = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/'
-#head = work_dir + 'data_corrected/classification task/'
-text_type = ['atheism', 'autos', 'graphics','medicine','motorcycles','religion','space']
 
-tail = '/train_docs/*.txt'
-
-#path = [head + text_type[i] +tail for i in range(len(text_type))]
-
-#this function is the do the text cleaning. 
-#The input path is the path where text file was stored
-#The output is the whole string for each topic
-def txt_clean_for_pre(filepath):
+def txt_clean_for_test(filepath):
+    test_str = {}
     #first set up some string to cut off the head of the e-mail
     headStr1 = 'writes :'
     headStr2 = 'wrote :'
@@ -47,8 +33,7 @@ def txt_clean_for_pre(filepath):
     for file in files:
         f=open(file, 'r')
         line = f.read().replace('\n', '').lower()
-        
-        #print file, '\n', line, '\n'
+               
         # leave out head (Subject, Email Address, etc)
         if line.rfind(headStr1) != -1:
             ind = line.rfind(headStr1)
@@ -131,81 +116,12 @@ def txt_clean_for_pre(filepath):
         
         #print file, '\n', data_after, '\n'
         data_after = data_after.strip()
-
-        Text = Text + ' ' + data_after
-        
-    return Text 
-
-clean_string = {'atheism':'', 'autos':'','graphics':'','medicine':'','motorcycles':'','religion':'','space':''}
-
-for i in text_type:
-	path = head + i +tail
-	print i
-	clean_string[i] = txt_clean_for_pre(path)
-
-'''
-Input:   cleaned text string, shreshold k for unknow words
-Output:  text list with <unk>, vocabulary list
-'''
-def FillInUnk (txtStr, k): 
-    
-    textList = txtStr.split()
-
-    voc_all = {}
-    for i in textList:
-        voc_all[i] = textList.count(i)
-
-    unkList = []
-    for wd in voc_all.keys():
-        if voc_all[wd] <= k: 
-            unkList.append(wd)
-    
-    for wd in unkList:
-        textList = ['<unk>' if x == wd else x for x in textList ]
-    
-    vocList = list(set(textList))
-    
-    return(textList, vocList)
-
-'''
-Take word list and vocabulary as input
-based on the bigram model output the bigram frequency table
-'''
-
-def gen_BiGram(TextList,wd_base):
-    BiGram = {}
-    for wd in wd_base:
-        BiGram[wd] = {}
-
-    for i in range(len(TextList) - 1):
-        BiGram[TextList[i]][TextList[i + 1]] = 0
+        print file, '\n', data_after, '\n'
+        test_str[re.findall(r'\d+',file[file.rfind("/"):])[0]] = data_after
 
         
-    for i in range(len(TextList) - 1):
-        print '**********************Bigram********************************\n'
-        print 100.0 * i / len(TextList),'\n',TextList[i], '\n', TextList[i + 1] , '\n'
-        wd = TextList[i]
-        wd1 = TextList[i+1]
-        BiGram[wd][wd1] = BiGram[wd][wd1] + 1 
+        
+    return test_str
 
-    return BiGram
-
-
-text, vocabulary = FillInUnk(clean_string['atheism'], 1)
-fre_table = gen_BiGram(text, vocabulary)
-print fre_table
-
-
-'''
-Input:  test file text string, shreshold k, topic vocabulary list
-Output: test file text string with <unk>
-'''
-def FillInUnk_Test (txtStr, k, vocList):
-    
-    txtList = txtStr.split()
-    
-    txtList = ['<unk>' if word not in vocList else word for word in txtList ]
-    
-    return(txtList)
-
-head_test = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/'
+head_test = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/test_for_classification//*.txt'
+a =  txt_clean_for_test(head_test)
