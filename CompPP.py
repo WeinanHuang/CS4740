@@ -13,11 +13,10 @@ def CompPP (txtList, BigramTable, Nc, k):
             p = Nc[1] / N
         elif BigramTable[txtList[i-1]][txtList[i]] <= k:
             c = BigramTable[txtList[i-1]][txtList[i]]
-            cGT = (c + 1) * N[c+1] / N[c]
-            p = cGT / sum(BigramTable[txtList[i]].values())
+            cGT = 1. * (c + 1) * Nc[c+1] / Nc[c]
+            p = 1. * cGT / sum(BigramTable[txtList[i]].values())
         else: 
-            p = BigramTable[txtList[i-1]][txtList[i]]
+            p = 1. * BigramTable[txtList[i-1]][txtList[i]] / sum(BigramTable[txtList[i-1]].values())
         PP = PP + (- np.log(p))
-    
     PP = np.exp(PP/N)
     return(PP)
