@@ -239,18 +239,36 @@ def CompPP (txtList, BigramTable, Nc, k):
 Cross Validation
 '''
 
-head = '/Users/Raymond/Desktop/COURSE/Fall 2016/4740/data_corrected/classification task/'
-text_type = ['atheism', 'autos', 'graphics','medicine','motorcycles','religion','space']
-tail = '/train_docs/*.txt'
-clean_string = {'atheism':'', 'autos':'','graphics':'','medicine':'','motorcycles':'','religion':'','space':''}
-for i in text_type:
-    path = head + i +tail
-    clean_string[i] = txt_clean_for_pre(path)
 
+
+Raw = { 'from Haojiong '}
+
+
+TrainStr = {} # dictionary of 7, String
+ValidFile = {} # dictionary of 7, List
+Voc = {} # dictionary of 7, Dict[word]
+BiGram = {} # dictionary of 7, Dict[word1][word2]
+Nc = {} # dictionary of 7, List
+MisCount = {} # dictionary of 7, int
+
+for topic in ['atheism', 'autos', 'graphics','medicine','motorcycles','religion','space']:
+	for filename in Raw[topic].keys()[:200]:
+		TrainStr[topic] = TrainStr[topic] + Raw[topic][filename]
+	ValidFile[topic] = Raw[topic].keys()[200:]
 
 unkRange = range(0, 10)
 GTRange  = range(0,5)
 result   = np.ndarray(shape = (10,5))
 
 for k_unk in unkRange:
+	for k_GT in GTRange:
+		# based on k_unk and k_GT, train 7 topic models
+		for topic in ['atheism', 'autos', 'graphics','medicine','motorcycles','religion','space']:
+			TrainList, Voc[topic] = FillInUnk(TrainStr[topic], k = k_unk)
+			BiGram[topic] = gen_BiGram(TrainList, Voc[topic])
+			Nc[topic] = gen_Nc(Voc[topic], BiGram[topic])
+		# apply model to corresponding validate sets and count misclassification times
+		for topic in ['atheism', 'autos', 'graphics','medicine','motorcycles','religion','space']:
+
+
 
