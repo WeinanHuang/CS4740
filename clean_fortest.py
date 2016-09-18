@@ -116,12 +116,25 @@ def txt_clean_for_test(filepath):
         
         #print file, '\n', data_after, '\n'
         data_after = data_after.strip()
-        print file, '\n', data_after, '\n'
+        #print file, '\n', data_after, '\n'
         test_str[re.findall(r'\d+',file[file.rfind("/"):])[0]] = data_after
 
         
         
     return test_str
 
-head_test = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/test_for_classification//*.txt'
-a =  txt_clean_for_test(head_test)
+head = '/Users/haojiongwang/Desktop/CORNELL/cs4740/data_corrected/classification task/'
+#head = work_dir + 'data_corrected/classification task/'
+text_type = ['atheism', 'autos', 'graphics','medicine','motorcycles','religion','space']
+
+tail = '/train_docs/*.txt'
+
+train_text = {}
+for i in text_type:
+    path = head + i + tail
+
+    train_text[i] = txt_clean_for_test(path)
+    print len(train_text[i])
+
+
+
