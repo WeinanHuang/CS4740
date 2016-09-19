@@ -1,3 +1,9 @@
+
+# coding: utf-8
+
+# In[81]:
+
+from __future__ import division
 import glob
 import os
 import re
@@ -143,8 +149,8 @@ def gen_BiGram(TextList,wd_base):
 
         
     for i in range(len(TextList) - 1):
-        print '**********************Bigram********************************\n'
-        print 100.0 * i / len(TextList),'\n',TextList[i], '\n', TextList[i + 1] , '\n'
+        #print '**********************Bigram********************************\n'
+        #print 100.0 * i / len(TextList),'\n',TextList[i], '\n', TextList[i + 1] , '\n'
         wd = TextList[i]
         wd1 = TextList[i+1]
         BiGram[wd][wd1] = BiGram[wd][wd1] + 1 
@@ -325,11 +331,11 @@ def CompPP (txtList, BigramTable, Nc, k):
     import numpy as np
     
     PP = 0
-    N  = len(txtList)
+    N  = sum(Nc)
     
-    for i in range(1,N):    
+    for i in range(1,len(txtList)):    
         if txtList[i] not in BigramTable[txtList[i-1]].keys():
-            p = Nc[1] / N
+            p = 1. * Nc[1] / N
 
         elif BigramTable[txtList[i-1]][txtList[i]] <= k:
             c = BigramTable[txtList[i-1]][txtList[i]]
@@ -340,11 +346,11 @@ def CompPP (txtList, BigramTable, Nc, k):
             p = 1. * BigramTable[txtList[i-1]][txtList[i]] / sum(BigramTable[txtList[i-1]].values())
         PP = PP + (- np.log(p))
     
-    PP = np.exp(PP/N)
+    PP = np.exp(PP/len(txtList))
     return(PP)
 
 
-
+# In[82]:
 
 work_dir = os.getcwd() + '/'
 #please change the path to the data file
@@ -364,6 +370,7 @@ for i in text_type:
 	clean_string[i] = txt_clean_for_pre(path)
 
 
+# In[83]:
 
 data_pre = {}
 data_pre['text']={}
@@ -377,23 +384,118 @@ for i in text_type:
     data_pre['bigram'][i] = gen_BiGram(data_pre['text'][i], data_pre['vocabulary'][i])
     data_pre['Nc'][i] = gen_Nc(data_pre['vocabulary'][i],data_pre['bigram'][i])
     
-    
-    
 
-print data_pre
 
+# In[84]:
 
 final_test_dic = {}
 for i in range(len(test_clean)):
     final_test_dic[str(i)] = {}
+    final_test_dic[str(i)]['Perplexity'] = {}
     for j in range(len(text_type)):
-        final_test_dic[str(i)][text_type[j]] = FillInUnk_Test(test_clean[str(i)], data_pre['vocabulary'][text_type[j]])
-        print text_type[j], '\n', final_test_dic[str(i)][text_type[j]],'\n'
         final_test_dic[str(i)][text_type[j]] = {}
+        final_test_dic[str(i)][text_type[j]]['text'] = FillInUnk_Test(test_clean[str(i)], data_pre['vocabulary'][text_type[j]])
+        #print text_type[j], '\n', final_test_dic[str(i)][text_type[j]],'\n'
         
-        final_test_dic[str(i)][text_type[j]]['Perplexity']= CompPP(final_test_dic[str(i)][text_type[j]],data_pre['bigram'][text_type[j]],data_pre['Nc'][text_type[j]],1)
-     
+        text_file = final_test_dic[str(i)][text_type[j]]['text']
+        bigram = data_pre['bigram'][text_type[j]]
+        nc_num = data_pre['Nc'][text_type[j]]
+        print CompPP(text_file,bigram,nc_num,1),'\n'
+        
+        final_test_dic[str(i)]['Perplexity'][text_type[j]]= CompPP(text_file,bigram,nc_num,1)
 
+
+
+
+# In[85]:
+
+res_list = []
+for i in range(len(test_clean)):
+    class_res =  min(final_test_dic[str(i)]['Perplexity'], key=final_test_dic[str(i)]['Perplexity'].get)
+    res_list.append(class_res)
+
+
+# In[48]:
+
+
+
+
+# In[86]:
+
+print res_list
+
+
+# In[100]:
+
+list_encode = [200]*len(res_list)
+for i in range(len(res_list)):
+    if res_list[i] == 'atheism':
+        list_encode[i] = 0
+        
+    elif res_list[i] == 'autos':
+        list_encode[i] = 1
+        
+    elif res_list[i] == 'graphics':
+        list_encode[i] = 2
+        
+    elif res_list[i] == 'medicine':
+        list_encode[i] = 3
+        
+    elif res_list[i] == 'motorcycles':
+        list_encode[i] = 4
+        
+    elif res_list[i] == 'religion':
+        list_encode[i] = 5
+        
+    elif res_list[i] == 'space':
+        list_encode[i] = 6
+            
+        
+        
+
+
+# In[101]:
+
+print len(list_encode)
+
+
+# In[102]:
+
+import pandas as pd
+df1 = pd.DataFrame(list_encode)
+
+
+# In[75]:
+
+
+
+
+# In[103]:
+
+df1.to_csv('/Users/haojiongwang/Desktop/CORNELL/cs4740/df1.csv')
+
+
+# In[98]:
+
+res_list = [300]*len(test_clean)
+for i in range(len(test_clean)):
+    cl = 'unknown'
+    minCount = 10**4
+    for j in text_type:
+        unkCount = final_test_dic[str(i)][j]['text'].count('<unk>')
+        if unkCount < minCount:
+            cl = j
+            minCount = unkCount
+    res_list[i] = cl
+ 
+
+
+# In[99]:
+
+print res_list
+
+
+# In[ ]:
 
 
 
