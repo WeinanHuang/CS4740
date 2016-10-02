@@ -130,8 +130,10 @@ def txt_clean_for_pre(filepath):
     return Text 
 
 '''
-Take word list and vocabulary as input
-based on the bigram model output the bigram frequency table
+Based on cleaned training text list, generate BiGram Count Table.
+
+Input:  word list and vocabulary
+Output: the bigram count table
 '''
 def gen_BiGram(TextList,wd_base):
     BiGram = {}
@@ -141,40 +143,39 @@ def gen_BiGram(TextList,wd_base):
     for i in range(len(TextList) - 1):
         BiGram[TextList[i]][TextList[i + 1]] = 0
 
-        
     for i in range(len(TextList) - 1):
-        print '**********************Bigram********************************\n'
-        print 100.0 * i / len(TextList),'\n',TextList[i], '\n', TextList[i + 1] , '\n'
+        #print '**********************Bigram********************************\n'
+        #print 100.0 * i / len(TextList),'\n',TextList[i], '\n', TextList[i + 1] , '\n'
         wd = TextList[i]
         wd1 = TextList[i+1]
         BiGram[wd][wd1] = BiGram[wd][wd1] + 1 
 
+    return(BiGram)
 
-    return BiGram
 
 '''
+Fill in words with occurance <= k with <unk> in training texts
+
 Input:   cleaned text string, shreshold k for unknow words
 Output:  text list with <unk>, vocabulary list
 '''
 def FillInUnk (txtStr, k): 
     
-    textList = txtStr.split()
+    txtList = txtStr.split()
 
     voc_all = {}
-    for i in list(set(textList)):
-        voc_all[i] = textList.count(i)
+    for i in list(set(txtList)):
+        voc_all[i] = txtList.count(i)
 
-    unkList = []
-    for wd in voc_all.keys():
-        if voc_all[wd] <= k: 
-            unkList.append(wd)
+    for word in voc_all.keys():
+        if voc_all[word] <= k: 
+            txtList = ['<unk>' if x == word else x for x in txtList ]
     
-    for wd in unkList:
-        textList = ['<unk>' if x == wd else x for x in textList ]
+    vocList = list(set(txtList))
     
-    vocList = list(set(textList))
+    n_unk = len(voc_all.keys()) - len(vocList) + 1
     
-    return(textList, vocList)
+    return(txtList, vocList, n_unk)
 
 def txt_clean_for_test(filepath):
     test_str = {}
@@ -291,6 +292,12 @@ def txt_clean_for_test(filepath):
         
     return test_str
 
+'''
+Fill in words not in vocabulary with <unk> in test texts
+
+Input:  test file text string, shreshold k, topic vocabulary list
+Output: test file text string with <unk>
+'''
 def FillInUnk_Test (txtStr, vocList):
     
     txtList = txtStr.split()
@@ -300,12 +307,15 @@ def FillInUnk_Test (txtStr, vocList):
     return(txtList)
 
 '''
-Input:  Vocabulary and BigramTable of given topic
-Output: Nc of given topic
+Based on BiGram Count table, generate Nc List.
+
+Input:  vocabulary list and BigramTable for given topic
+Output: Nc as a list
 '''
 def gen_Nc (vocList, BigramTable):
     
     maxLocal = [0] * len(vocList)
+    
     for i in range(len(vocList)):
         maxLocal[i] = max(BigramTable[vocList[i]].values())
     maxC = max(maxLocal)
@@ -318,29 +328,33 @@ def gen_Nc (vocList, BigramTable):
     return(Nc)
 
 '''
+Compute Perplexity.
+
 Input:  test file list, one topic BigramTable, corresponding Nc, threshold k
 Output: Perplexity value for test file belongs to gien topic
 '''
-def CompPP (txtList, BigramTable, Nc, k):
-    import numpy as np
+def CompPP (txtList, BigramTable, Voc, Nc, unk_n, k):
     
     PP = 0
-    N  = len(txtList)
+    N  = sum(Nc)
     
-    for i in range(1,N):    
+    for i in range(1,len(txtList)):    
         if txtList[i] not in BigramTable[txtList[i-1]].keys():
-            p = Nc[1] / N
-
+            p = 1. * Nc[1] / N
+        
         elif BigramTable[txtList[i-1]][txtList[i]] <= k:
             c = BigramTable[txtList[i-1]][txtList[i]]
-            cGT = 1. * (c + 1) * Nc[c+1] / Nc[c]
+            cGT = 1. * (c + 1) * Nc[c+1] / max(Nc[c],1)
             p = 1. * cGT / sum(BigramTable[txtList[i]].values())
-
-        else: 
+        
+        elif txtList[i] == '<unk>': 
+            p = 1. * 10 / (unk_n) * BigramTable[txtList[i-1]][txtList[i]] / sum(BigramTable[txtList[i-1]].values())
+        
+        else:
             p = 1. * BigramTable[txtList[i-1]][txtList[i]] / sum(BigramTable[txtList[i-1]].values())
         PP = PP + (- np.log(p))
     
-    PP = np.exp(PP/N)
+    PP = np.exp(PP / len(txtList))
     return(PP)
 
 
@@ -370,30 +384,67 @@ data_pre['text']={}
 data_pre['bigram'] = {}
 data_pre['vocabulary'] = {}
 data_pre['Nc'] = {}
+data_pre['num_unk'] = {}
 
 for i in text_type:
     print i
-    data_pre['text'][i], data_pre['vocabulary'][i] = FillInUnk(clean_string[i], 1)
+    data_pre['text'][i], data_pre['vocabulary'][i], data_pre['num_unk'][i] = FillInUnk(clean_string[i], 1)
     data_pre['bigram'][i] = gen_BiGram(data_pre['text'][i], data_pre['vocabulary'][i])
     data_pre['Nc'][i] = gen_Nc(data_pre['vocabulary'][i],data_pre['bigram'][i])
     
     
     
 
-print data_pre
-
-
 final_test_dic = {}
 for i in range(len(test_clean)):
     final_test_dic[str(i)] = {}
+    final_test_dic[str(i)]['Perplexity'] = {}
     for j in range(len(text_type)):
-        final_test_dic[str(i)][text_type[j]] = FillInUnk_Test(test_clean[str(i)], data_pre['vocabulary'][text_type[j]])
-        print text_type[j], '\n', final_test_dic[str(i)][text_type[j]],'\n'
         final_test_dic[str(i)][text_type[j]] = {}
+        final_test_dic[str(i)][text_type[j]]['text'] = FillInUnk_Test(test_clean[str(i)], data_pre['vocabulary'][text_type[j]])
+        #print text_type[j], '\n', final_test_dic[str(i)][text_type[j]],'\n'
         
-        final_test_dic[str(i)][text_type[j]]['Perplexity']= CompPP(final_test_dic[str(i)][text_type[j]],data_pre['bigram'][text_type[j]],data_pre['Nc'][text_type[j]],1)
-     
+        text_file = final_test_dic[str(i)][text_type[j]]['text']
+        bigram = data_pre['bigram'][text_type[j]]
+        nc_num = data_pre['Nc'][text_type[j]]
+        vocabulary = data_pre['vocabulary'][text_type[j]]
+        number_unk = data_pre['num_unk'][text_type[j]]
 
+        #print CompPP(text_file,bigram,nc_num,1),'\n'
+        
+        final_test_dic[str(i)]['Perplexity'][text_type[j]]= CompPP(text_file,bigram,vocabulary, nc_num, number_unk,1)
 
+res_list = []
+for i in range(len(test_clean)):
+    class_res =  min(final_test_dic[str(i)]['Perplexity'], key=final_test_dic[str(i)]['Perplexity'].get)
+    res_list.append(class_res)
+
+list_encode = [200]*len(res_list)
+for i in range(len(res_list)):
+    if res_list[i] == 'atheism':
+        list_encode[i] = 0
+        
+    elif res_list[i] == 'autos':
+        list_encode[i] = 1
+        
+    elif res_list[i] == 'graphics':
+        list_encode[i] = 2
+        
+    elif res_list[i] == 'medicine':
+        list_encode[i] = 3
+        
+    elif res_list[i] == 'motorcycles':
+        list_encode[i] = 4
+        
+    elif res_list[i] == 'religion':
+        list_encode[i] = 5
+        
+    elif res_list[i] == 'space':
+        list_encode[i] = 6
+    
+print list_encode
+
+import pandas as pd
+df12 = pd.DataFrame(list_encode)
 
 

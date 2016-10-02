@@ -2,7 +2,7 @@
 Input:  Vocabulary and BigramTable of given topic
 Output: Nc of given topic
 '''
-def gen_Nc (vocList, BigramTable):
+def gen_Nc(vocList, BigramTable):
     
     maxLocal = [0] * len(vocList)
     for i in range(len(vocList)):
