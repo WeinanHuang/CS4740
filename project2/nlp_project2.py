@@ -3,9 +3,11 @@ import os
 import re
 import collections
 import pandas as pd
+
 whole_word = []
 path = '/Users/haojiongwang/Desktop/CORNELL/cs4740/project2/nlp_project2_uncertainty/train/*.txt'
 files=glob.glob(path)
+
 for file in files:
     f=open(file, 'r')
     line = f.read().replace('\n', ' ')
