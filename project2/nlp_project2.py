@@ -1,8 +1,3 @@
-
-# coding: utf-8
-
-# In[15]:
-
 import glob
 import os
 import re
@@ -21,7 +16,7 @@ for file in files:
     
 
 
-# In[22]:
+
 
 ambi_word = []
 for i in range(len(whole_word)):
@@ -29,22 +24,18 @@ for i in range(len(whole_word)):
         ambi_word.append(whole_word[i-2])
 
 
-# In[27]:
 
 
+#this is to get the uncertain dictionary
 uncertain_dict = {}
 wd_count = collections.Counter(ambi_word)
 for i in list(set(ambi_word)):
     uncertain_dict[i] = wd_count[i]
     
 
-
-# In[28]:
-
-print uncertain_dict
-
-
-# In[ ]:
+#this is to get the sorted dictionry 
+for key, value in sorted(uncertain_dict.iteritems(), key=lambda (k,v): (v,k)):
+    print "%s: %s" % (key, value)
 
 
 
