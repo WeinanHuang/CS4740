@@ -32,9 +32,9 @@ def train_process(filepath):
     for i in range(len(cue)):
         if cue[i][0:3] == 'CUE':
             if i == 0 or cue[i] != cue[i-1]:
-                cue_re.append('I')
-            elif cue[i] == cue[i-1]:
                 cue_re.append('B')
+            elif cue[i] == cue[i-1]:
+                cue_re.append('I')
         else:
             cue_re.append('O')
 
