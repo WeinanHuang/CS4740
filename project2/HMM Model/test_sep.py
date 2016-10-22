@@ -12,3 +12,4 @@ def test_sep(test):
     test_dict = {}
     for i in range(len(delimit)-1):
         test_dict[i] = test.iloc[delimit[i] + 1:delimit[i+1] + 1]
+    return test_dict
